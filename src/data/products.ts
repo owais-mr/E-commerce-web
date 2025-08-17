@@ -1,0 +1,154 @@
+import { Product } from '../types';
+
+export const categories = [
+  'All',
+  'Electronics',
+  'Fashion',
+  'Home & Garden',
+  'Sports',
+  'Books',
+  'Beauty'
+];
+
+export const products: Product[] = [
+  {
+    id: '1',
+    name: 'Premium Wireless Headphones',
+    price: 299.99,
+    originalPrice: 399.99,
+    image: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Electronics',
+    description: 'High-quality wireless headphones with noise cancellation and premium sound quality.',
+    rating: 4.8,
+    reviews: 1247,
+    inStock: true,
+    featured: true
+  },
+  {
+    id: '2',
+    name: 'Designer Cotton T-Shirt',
+    price: 49.99,
+    image: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Fashion',
+    description: 'Comfortable and stylish cotton t-shirt perfect for everyday wear.',
+    rating: 4.5,
+    reviews: 823,
+    inStock: true
+  },
+  {
+    id: '3',
+    name: 'Smart Fitness Watch',
+    price: 199.99,
+    originalPrice: 249.99,
+    image: 'https://images.pexels.com/photos/393047/pexels-photo-393047.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Electronics',
+    description: 'Advanced fitness tracking with heart rate monitoring and GPS.',
+    rating: 4.6,
+    reviews: 956,
+    inStock: true,
+    featured: true
+  },
+  {
+    id: '4',
+    name: 'Eco-Friendly Water Bottle',
+    price: 24.99,
+    image: 'https://images.pexels.com/photos/3985062/pexels-photo-3985062.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Sports',
+    description: 'Sustainable stainless steel water bottle that keeps drinks cold for 24 hours.',
+    rating: 4.7,
+    reviews: 634,
+    inStock: true
+  },
+  {
+    id: '5',
+    name: 'Minimalist Desk Lamp',
+    price: 89.99,
+    image: 'https://images.pexels.com/photos/1112598/pexels-photo-1112598.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Home & Garden',
+    description: 'Modern LED desk lamp with adjustable brightness and sleek design.',
+    rating: 4.4,
+    reviews: 412,
+    inStock: true
+  },
+  {
+    id: '6',
+    name: 'Organic Skincare Set',
+    price: 79.99,
+    originalPrice: 99.99,
+    image: 'https://images.pexels.com/photos/3685530/pexels-photo-3685530.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Beauty',
+    description: 'Complete skincare routine with natural and organic ingredients.',
+    rating: 4.9,
+    reviews: 1891,
+    inStock: true,
+    featured: true
+  },
+  {
+    id: '7',
+    name: 'Professional Chef Knife',
+    price: 159.99,
+    image: 'https://images.pexels.com/photos/2635307/pexels-photo-2635307.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Home & Garden',
+    description: 'High-carbon steel chef knife for professional and home cooking.',
+    rating: 4.8,
+    reviews: 723,
+    inStock: false
+  },
+  {
+    id: '8',
+    name: 'Bestselling Novel Collection',
+    price: 34.99,
+    image: 'https://images.pexels.com/photos/1481105/pexels-photo-1481105.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Books',
+    description: 'Collection of three bestselling novels from award-winning authors.',
+    rating: 4.6,
+    reviews: 1456,
+    inStock: true
+  },
+  {
+    id: '9',
+    name: 'Wireless Charging Pad',
+    price: 39.99,
+    image: 'https://images.pexels.com/photos/4614200/pexels-photo-4614200.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Electronics',
+    description: 'Fast wireless charging pad compatible with all Qi-enabled devices.',
+    rating: 4.3,
+    reviews: 892,
+    inStock: true
+  },
+  {
+    id: '10',
+    name: 'Vintage Leather Jacket',
+    price: 249.99,
+    originalPrice: 329.99,
+    image: 'https://images.pexels.com/photos/1124465/pexels-photo-1124465.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Fashion',
+    description: 'Genuine leather jacket with vintage styling and premium craftsmanship.',
+    rating: 4.7,
+    reviews: 567,
+    inStock: true,
+    featured: true
+  },
+  {
+    id: '11',
+    name: 'Yoga Mat Pro',
+    price: 59.99,
+    image: 'https://images.pexels.com/photos/4327024/pexels-photo-4327024.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Sports',
+    description: 'Premium non-slip yoga mat with superior cushioning and durability.',
+    rating: 4.5,
+    reviews: 1023,
+    inStock: true
+  },
+  {
+    id: '12',
+    name: 'Artisan Coffee Beans',
+    price: 18.99,
+    image: 'https://images.pexels.com/photos/1695052/pexels-photo-1695052.jpeg?auto=compress&cs=tinysrgb&w=500',
+    category: 'Home & Garden',
+    description: 'Single-origin coffee beans roasted to perfection for the ultimate coffee experience.',
+    rating: 4.9,
+    reviews: 2134,
+    inStock: true
+  }
+];
