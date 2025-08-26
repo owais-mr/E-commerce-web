@@ -1,7 +1,9 @@
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { WishlistProvider } from './context/WishlistContext';
+import { ReviewProvider } from './context/ReviewContext';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import ProductDetails from './components/ProductDetails';
 import Cart from './components/Cart';
@@ -16,25 +18,33 @@ import SignupPage from './components/SignupPage';
 import ProfilePage from './components/ProfilePage';
 import HomePage from './components/HomePage';
 import AboutPage from './components/AboutPage';
-import { useState, useMemo } from 'react';
+import WishlistPage from './components/WishlistPage';
+import { useState, useMemo, useEffect } from 'react';
 
 // Move navigation logic into a wrapper component inside Router
 
 const App = () => {
   const { products, loading, error, refetch } = useProducts();
-  const [categories, setCategories] = useState<string[]>(['All']);
+  const location = useLocation();
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(products.map((p: Product) => p.category)));
+    return ['All', ...cats];
+  }, [products]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Update categories when products change
-  useMemo(() => {
-    if (products.length > 0) {
-      // Extract unique categories from products
-      const cats = Array.from(new Set(products.map((p: Product) => p.category)));
-      setCategories(['All', ...cats]);
+  // Sync selected category from URL query (e.g., /?category=Electronics)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const categoryParam = params.get('category');
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+      setTimeout(() => {
+        document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' });
+      }, 0);
     }
-  }, [products]);
+  }, [location.search]);
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
@@ -76,56 +86,57 @@ const App = () => {
     <ToastProvider>
       <AuthProvider>
         <CartProvider>
-          <Router>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              {/* Protected routes */}
-              <Route
-                path="/*"
-                element={
-                  <RequireAuth>
-                    <Header
-                      onCartClick={() => setIsCartOpen(true)}
-                      searchQuery={searchQuery}
-                      onSearchChange={setSearchQuery}
-                    />
-                    <Routes>
-                      <Route
-                        path="/"
-                        element={loading ? (
-                          <div className="text-center py-16 text-xl text-slate-600">Loading products...</div>
-                        ) : (
-                          <HomePage
-                            selectedCategory={selectedCategory}
-                            onCategoryChange={setSelectedCategory}
-                            categories={categories}
-                            categoryCounts={categoryCounts}
-                            products={filteredProducts}
-                          />
-                        )}
-                      />
-                      <Route path="product/:productId" element={<ProductDetails />} />
-                      <Route path="checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-                      <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-                      <Route path="about" element={<AboutPage />} />
-                      {/* Catch-all: redirect unknown routes to home */}
-                      <Route path="*" element={<HomePage
-                            selectedCategory={selectedCategory}
-                            onCategoryChange={setSelectedCategory}
-                            categories={categories}
-                            categoryCounts={categoryCounts}
-                            products={filteredProducts}
-                          />} />
-                    </Routes>
-                    <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-                    <Footer />
-                  </RequireAuth>
-                }
-              />
-            </Routes>
-          </Router>
+          <WishlistProvider>
+            <ReviewProvider>
+          {/* <Router> removed, BrowserRouter is only in main.tsx */}
+          <Header
+            onCartClick={() => setIsCartOpen(true)}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            {/* Protected routes */}
+            <Route
+              path="/*"
+              element={
+                <RequireAuth>
+                  <Routes>
+                    <Route path="/" element={loading ? (
+                        <div className="text-center py-16 text-xl text-slate-600">Loading products...</div>
+                      ) : (
+                        <HomePage
+                          selectedCategory={selectedCategory}
+                          onCategoryChange={setSelectedCategory}
+                          categories={categories}
+                          categoryCounts={categoryCounts}
+                          products={filteredProducts}
+                        />
+                      )} />
+                    <Route path="product/:productId" element={<ProductDetails />} />
+                    <Route path="checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+                    <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                    <Route path="wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
+                    {/* Catch-all: redirect unknown routes to home */}
+                    <Route path="*" element={<HomePage
+                          selectedCategory={selectedCategory}
+                          onCategoryChange={setSelectedCategory}
+                          categories={categories}
+                          categoryCounts={categoryCounts}
+                          products={filteredProducts}
+                        />} />
+                  </Routes>
+                  <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+                </RequireAuth>
+              }
+            />
+          </Routes>
+          <Footer />
+            </ReviewProvider>
+          </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </ToastProvider>

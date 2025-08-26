@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Menu, X } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ searchQuery, onSearchChange, onCartClic
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/auth');
+      navigate('/login');
     } catch (error) {
       handleError(error);
     }
@@ -33,7 +33,10 @@ const Header: React.FC<HeaderProps> = ({ searchQuery, onSearchChange, onCartClic
     { name: 'Products', href: '#products', onClick: () => { navigate('/'); setTimeout(() => { document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' }); }, 100); } },
     { name: 'Categories', href: '#categories', onClick: () => { navigate('/'); setTimeout(() => { document.getElementById('categories')?.scrollIntoView({ behavior: 'smooth' }); }, 100); } },
     { name: 'About', href: '/about', onClick: () => navigate('/about') },
-    { name: 'Contact', href: '/contact', onClick: () => navigate('/contact') },
+    { name: 'Contact Us', href: '#contact', onClick: () => { 
+      navigate('/'); 
+      setTimeout(() => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }, 100); 
+    } },
   ];
 
   return (
@@ -42,9 +45,11 @@ const Header: React.FC<HeaderProps> = ({ searchQuery, onSearchChange, onCartClic
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold text-slate-800">
-              Store<span className="text-amber-500">X</span>
-            </h1>
+            <button aria-label="Go to home" onClick={() => navigate('/')} className="bg-transparent border-0 p-0 m-0 cursor-pointer">
+              <h1 className="text-2xl font-bold text-slate-800">
+                Store<span className="text-amber-500">X</span>
+              </h1>
+            </button>
           </div>
 
           {/* Desktop Navigation */}
@@ -78,6 +83,13 @@ const Header: React.FC<HeaderProps> = ({ searchQuery, onSearchChange, onCartClic
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
+                <button
+                  onClick={() => navigate('/wishlist')}
+                  className="text-slate-600 hover:text-red-500 p-2 transition-colors duration-200 border border-slate-300 rounded-lg flex items-center"
+                  title="Wishlist"
+                >
+                  <Heart className="w-5 h-5" />
+                </button>
                 <span className="text-slate-700 font-medium mr-2 cursor-pointer" onClick={() => navigate('/profile')}>Hi, {user?.email || 'User'}</span>
                 <button
                   onClick={handleLogout}

@@ -1,29 +1,41 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   const footerSections = [
     {
       title: 'Shop',
-      links: ['All Products', 'Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Beauty']
+      links: [
+        { label: 'All Products', href: '/' },
+        { label: 'Electronics', href: '/?category=Electronics' },
+        { label: 'Fashion', href: '/?category=Fashion' },
+        { label: 'Home & Garden', href: '/?category=Home%20%26%20Garden' },
+        { label: 'Sports', href: '/?category=Sports' },
+        { label: 'Beauty', href: '/?category=Beauty' },
+      ]
     },
     {
       title: 'Customer Service',
       links: [
-        {
-          label: 'Contact Us',
-          href: '#contact',
-        },
-        'FAQ',
-        'Shipping Info',
-        'Returns',
-        'Size Guide',
-        'Track Order',
+        { label: 'Contact Us', href: '#contact' },
+        { label: 'FAQ', href: '/faq' },
+        { label: 'Shipping Info', href: '/shipping' },
+        { label: 'Returns', href: '/returns' },
+        { label: 'Size Guide', href: '/size-guide' },
+        { label: 'Track Order', href: '/track-order' },
       ],
     },
     {
       title: 'Company',
-      links: ['About Us', 'Careers', 'Press', 'Blog', 'Sustainability', 'Privacy Policy']
+      links: [
+        { label: 'About Us', href: '/about' },
+        { label: 'Careers', href: '/careers' },
+        { label: 'Press', href: '/press' },
+        { label: 'Blog', href: '/blog' },
+        { label: 'Sustainability', href: '/sustainability' },
+        { label: 'Privacy Policy', href: '/privacy' },
+      ]
     }
   ];
 
@@ -33,6 +45,13 @@ const Footer: React.FC = () => {
     { icon: Instagram, href: '#', label: 'Instagram' },
     { icon: Linkedin, href: '#', label: 'LinkedIn' }
   ];
+
+  const handleFooterLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
+    if (href === '#contact') {
+      e.preventDefault();
+      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <footer className="bg-slate-900 text-white" id="contact">
@@ -59,11 +78,11 @@ const Footer: React.FC = () => {
               </div>
               <div className="flex items-center text-slate-300">
                 <Mail className="w-4 h-4 mr-3 text-amber-500" />
-                <span className="text-sm">vsowaiscoder@gamil.com</span>
+                <span className="text-sm">vsowaiscoder@gmail.com</span>
               </div>
             </div>
           </div>
-
+               
           {/* Footer Links */}
           {footerSections.map((section, index) => (
             <div key={index}>
@@ -71,12 +90,22 @@ const Footer: React.FC = () => {
               <ul className="space-y-2">
                 {section.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
-                    <a
-                      href={typeof link === 'string' ? '#' : link.href}
-                      className="text-slate-300 hover:text-amber-400 transition-colors duration-200 text-sm"
-                    >
-                      {typeof link === 'string' ? link : link.label}
-                    </a>
+                    {link.href.startsWith('/') ? (
+                      <Link
+                        to={link.href}
+                        className="text-slate-300 hover:text-amber-400 transition-colors duration-200 text-sm"
+                      >
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className="text-slate-300 hover:text-amber-400 transition-colors duration-200 text-sm"
+                        onClick={link.href === '#contact' ? (e) => handleFooterLinkClick(e, link.href) : undefined}
+                      >
+                        {link.label}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>

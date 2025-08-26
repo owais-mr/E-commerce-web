@@ -1,13 +1,17 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useProduct } from '../hooks/useProduct';
+import { Heart } from 'lucide-react';
+import ProductReviews from './ProductReviews';
 
 const ProductDetails: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const { product, loading, error, refetch } = useProduct(productId);
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   if (loading) {
     return (
@@ -62,11 +66,20 @@ const ProductDetails: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
           <div className="mb-2 text-slate-600">Category: {product.category}</div>
-          <div className="mb-4 text-lg font-semibold text-slate-900">
-            ${product.price}
-            {product.originalPrice && (
-              <span className="text-slate-500 line-through ml-2">${product.originalPrice}</span>
-            )}
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-lg font-semibold text-slate-900">
+              ${product.price}
+              {product.originalPrice && (
+                <span className="text-slate-500 line-through ml-2">${product.originalPrice}</span>
+              )}
+            </div>
+            <button 
+              onClick={() => isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product)}
+              className={`p-2 rounded-full transition-colors duration-200 ${isInWishlist(product.id) ? 'bg-red-100 text-red-500' : 'bg-slate-100 hover:bg-red-100 hover:text-red-500'}`}
+              title={isInWishlist(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+            >
+              <Heart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+            </button>
           </div>
           <p className="mb-6 text-slate-700">{product.description}</p>
           <div className="flex items-center mb-4">
@@ -84,13 +97,21 @@ const ProductDetails: React.FC = () => {
               <span className="ml-2 text-slate-600">({product.reviews} reviews)</span>
             </div>
           </div>
-          <button
-            onClick={() => addToCart(product)}
-            disabled={!product.inStock}
-            className={`py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${product.inStock ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white hover:from-amber-600 hover:to-yellow-600 shadow-lg hover:shadow-xl transform hover:scale-105' : 'bg-slate-300 text-slate-500 cursor-not-allowed'}`}
-          >
-            Add to Cart
-          </button>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => addToCart(product)}
+              disabled={!product.inStock}
+              className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${product.inStock ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white hover:from-amber-600 hover:to-yellow-600 shadow-lg hover:shadow-xl transform hover:scale-105' : 'bg-slate-300 text-slate-500 cursor-not-allowed'}`}
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={() => isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product)}
+              className={`py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${isInWishlist(product.id) ? 'bg-red-500 text-white' : 'bg-slate-200 text-slate-700 hover:bg-red-100'}`}
+            >
+              {isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+            </button>
+          </div>
           <div className="mt-4">
             <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${product.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
               {product.inStock ? 'In Stock' : 'Out of Stock'}
@@ -98,6 +119,9 @@ const ProductDetails: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {/* Product Reviews Section */}
+      {product && <ProductReviews productId={product.id} />}
     </div>
   );
 };

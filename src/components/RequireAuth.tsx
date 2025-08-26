@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext';
 const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const location = useLocation();
-  if (!user && location.pathname !== '/auth') {
-    return <Navigate to="/auth" replace />;
+  if (!user && location.pathname !== '/login') {
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
   return <>{children}</>;
 };

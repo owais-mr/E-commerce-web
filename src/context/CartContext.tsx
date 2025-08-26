@@ -15,6 +15,12 @@ interface CartProviderProps {
   children: ReactNode;
 }
 
+interface Coupon {
+  code: string;
+  discountPercent: number;
+  isValid: boolean;
+}
+
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>(() => {
     // Load cart items from localStorage on initial render
@@ -26,6 +32,16 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       return [];
     }
   });
+  
+  const [coupon, setCoupon] = useState<Coupon | null>(() => {
+    try {
+      const savedCoupon = localStorage.getItem('cartCoupon');
+      return savedCoupon ? JSON.parse(savedCoupon) : null;
+    } catch (error) {
+      console.error('Error loading coupon from localStorage:', error);
+      return null;
+    }
+  });
 
   // Save cart items to localStorage whenever they change
   useEffect(() => {
@@ -35,6 +51,19 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       console.error('Error saving cart to localStorage:', error);
     }
   }, [items]);
+  
+  // Save coupon to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      if (coupon) {
+        localStorage.setItem('cartCoupon', JSON.stringify(coupon));
+      } else {
+        localStorage.removeItem('cartCoupon');
+      }
+    } catch (error) {
+      console.error('Error saving coupon to localStorage:', error);
+    }
+  }, [coupon]);
 
   const addToCart = (product: Product) => {
     setItems(prevItems => {
@@ -76,8 +105,43 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     return items.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const getTotalPrice = () => {
+  const applyCoupon = (code: string) => {
+    // In a real app, this would validate against a backend API
+    const validCoupons = {
+      'WELCOME10': 10,
+      'SAVE20': 20,
+      'SPECIAL50': 50
+    };
+    
+    if (code in validCoupons) {
+      setCoupon({
+        code,
+        discountPercent: validCoupons[code as keyof typeof validCoupons],
+        isValid: true
+      });
+      return true;
+    } else {
+      return false;
+    }
+  };
+  
+  const removeCoupon = () => {
+    setCoupon(null);
+  };
+  
+  const getSubtotal = () => {
     return items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+  };
+  
+  const getDiscountAmount = () => {
+    if (!coupon) return 0;
+    return (getSubtotal() * coupon.discountPercent) / 100;
+  };
+  
+  const getTotalPrice = () => {
+    const subtotal = getSubtotal();
+    const discount = getDiscountAmount();
+    return subtotal - discount;
   };
 
   const value: CartContextType = {
@@ -88,6 +152,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     clearCart,
     getTotalItems,
     getTotalPrice,
+    getSubtotal,
+    coupon,
+    applyCoupon,
+    removeCoupon,
+    getDiscountAmount
   };
 
   return (

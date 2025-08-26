@@ -1,7 +1,8 @@
-import React from 'react';
-import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Plus, Minus, ShoppingBag, Tag, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 interface CartProps {
   isOpen: boolean;
@@ -9,7 +10,11 @@ interface CartProps {
 }
 
 const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
-  const { items, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCart();
+  const { items, updateQuantity, removeFromCart, getTotalPrice, getSubtotal, clearCart, coupon, applyCoupon, removeCoupon, getDiscountAmount } = useCart();
+  const [couponCode, setCouponCode] = useState('');
+  const { showToast } = useToast();
+  const subtotal = getSubtotal();
+  const discountAmount = getDiscountAmount();
   const totalPrice = getTotalPrice();
   const navigate = useNavigate();
 
@@ -92,12 +97,76 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
             )}
           </div>
           
-          {/* Footer */}
+          {/* Coupon Section */}
           {items.length > 0 && (
-            <div className="border-t border-slate-200 p-6 space-y-4">
-              <div className="flex justify-between items-center text-lg font-semibold">
-                <span>Total:</span>
-                <span className="text-amber-600">${totalPrice.toFixed(2)}</span>
+            <div className="border-t border-slate-200 p-6">
+              {coupon ? (
+                <div className="bg-green-50 p-4 rounded-lg mb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Tag className="w-5 h-5 text-green-600 mr-2" />
+                      <div>
+                        <p className="font-medium text-green-800">Coupon Applied: {coupon.code}</p>
+                        <p className="text-sm text-green-600">{coupon.discountPercent}% discount</p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={removeCoupon}
+                      className="text-red-500 hover:text-red-700 text-sm font-medium"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2 mb-4">
+                  <input
+                    type="text"
+                    placeholder="Enter coupon code"
+                    className="flex-1 p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  />
+                  <button
+                    onClick={() => {
+                      if (couponCode.trim() === '') {
+                        showToast('Please enter a coupon code');
+                        return;
+                      }
+                      
+                      const success = applyCoupon(couponCode);
+                      if (success) {
+                        showToast(`Coupon ${couponCode} applied successfully!`);
+                        setCouponCode('');
+                      } else {
+                        showToast('Invalid coupon code');
+                      }
+                    }}
+                    className="bg-amber-500 text-white p-2 rounded-lg hover:bg-amber-600 transition-colors duration-200"
+                  >
+                    Apply
+                  </button>
+                </div>
+              )}
+              
+              {/* Price Summary */}
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between text-slate-600">
+                  <span>Subtotal:</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                
+                {coupon && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount ({coupon.discountPercent}%):</span>
+                    <span>-${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                
+                <div className="flex justify-between items-center text-lg font-semibold pt-2 border-t border-slate-200">
+                  <span>Total:</span>
+                  <span className="text-amber-600">${totalPrice.toFixed(2)}</span>
+                </div>
               </div>
               
               <div className="space-y-3">

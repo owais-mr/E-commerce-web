@@ -19,6 +19,12 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface Coupon {
+  code: string;
+  discountPercent: number;
+  isValid: boolean;
+}
+
 export interface CartContextType {
   items: CartItem[];
   addToCart: (product: Product) => void;
@@ -27,6 +33,11 @@ export interface CartContextType {
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  getSubtotal: () => number;
+  coupon: Coupon | null;
+  applyCoupon: (code: string) => boolean;
+  removeCoupon: () => void;
+  getDiscountAmount: () => number;
 }
 
 export interface AuthContextType {
